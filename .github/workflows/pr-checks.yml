@@ -1,0 +1,29 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    name: Validate PR metadata
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require a non-empty description
+        run: |
+          if [ -z "${{ github.event.pull_request.body }}" ]; then
+            echo "::error::PR description is empty. Please fill in the pull request template."
+            exit 1
+          fi
+
+      - name: Require a conventional-style title
+        run: |
+          title="${{ github.event.pull_request.title }}"
+          if ! [[ "$title" =~ ^(feat|fix|chore|docs|refactor|test|ci|build|perf)(\(.+\))?:\  ]]; then
+            echo "::error::PR title '$title' must start with feat:, fix:, chore:, docs:, refactor:, test:, ci:, build: or perf:"
+            exit 1
+          fi
+
+  # Add project-specific build/lint/test jobs here as the codebase grows.
+  # Once this job is required in branch protection, it becomes a mandatory
+  # status check alongside the CODEOWNERS review requirement.
