@@ -26,3 +26,4 @@ make test
 ```
 
 See [docs/SETUP.md](docs/SETUP.md) for prerequisites and manual commands.
+Test update for workflow notification.
