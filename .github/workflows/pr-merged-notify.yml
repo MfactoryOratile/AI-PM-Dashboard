@@ -1,0 +1,23 @@
+name: PR Merged Notification
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  notify:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Power Automate of PR merge
+        env:
+          WEBHOOK_URL: ${{ secrets.POWER_AUTOMATE_PR_MERGED_WEBHOOK_URL }}
+        run: |
+          if [ -n "$WEBHOOK_URL" ]; then
+            curl -sf -X POST "$WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d "{\"repo\":\"${{ github.repository }}\",\"pr_number\":${{ github.event.pull_request.number }},\"title\":${{ toJSON(github.event.pull_request.title) }},\"url\":\"${{ github.event.pull_request.html_url }}\",\"merged_by\":\"${{ github.event.pull_request.merged_by.login }}\"}" \
+              || echo "Notification failed (non-blocking)"
+          else
+            echo "POWER_AUTOMATE_PR_MERGED_WEBHOOK_URL not set, skipping notification"
+          fi

@@ -30,3 +30,25 @@ jobs:
           cache-dependency-path: frontend/package.json
       - run: npm install
       - run: npm run build
+
+  notify:
+    needs: [backend, frontend]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Power Automate of build status
+        env:
+          WEBHOOK_URL: ${{ secrets.POWER_AUTOMATE_BUILD_WEBHOOK_URL }}
+        run: |
+          status="success"
+          if [ "${{ needs.backend.result }}" != "success" ] || [ "${{ needs.frontend.result }}" != "success" ]; then
+            status="failure"
+          fi
+          if [ -n "$WEBHOOK_URL" ]; then
+            curl -sf -X POST "$WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -d "{\"status\":\"$status\",\"repo\":\"${{ github.repository }}\",\"branch\":\"${{ github.ref_name }}\",\"run_url\":\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\"workflow\":\"${{ github.workflow }}\"}" \
+              || echo "Notification failed (non-blocking)"
+          else
+            echo "POWER_AUTOMATE_BUILD_WEBHOOK_URL not set, skipping notification"
+          fi
