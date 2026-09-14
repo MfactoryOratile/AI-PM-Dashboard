@@ -92,3 +92,14 @@ Any change that expands what an agent can read, call, or act on must:
 - Whoever builds or edits an agent's flow/topic is responsible for keeping
   this document in sync with what's actually deployed — an undocumented
   capability is treated as a governance gap, not a feature.
+
+## Related documents
+
+- [RESPONSIBLE_AI.md](RESPONSIBLE_AI.md) — transparency, fairness, and
+  accountability standards, plus the bias/security check process agent
+  outputs must pass before shipping.
+- [DATA_SOVEREIGNTY.md](DATA_SOVEREIGNTY.md) — data residency and GDPR/POPIA
+  requirements for any real data store.
+- [GOVERNANCE_CHECKLIST.md](GOVERNANCE_CHECKLIST.md) — the consolidated
+  checklist rolling up this document, RESPONSIBLE_AI.md, and
+  DATA_SOVEREIGNTY.md.
